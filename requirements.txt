@@ -1,5 +1,6 @@
-Flask
-numpy
-scikit-learn==1.2.2
-pandas
-gunicorn
+Flask==3.0.3
+numpy==1.26.0
+pandas==2.1.2
+scikit-learn==1.3.2
+scipy==1.11.3
+gunicorn==22.0.0  # Required for deployment
