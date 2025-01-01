@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import pickle
 import numpy as np
+import os
 
 # Load model and scaler from Cloud Storage (or locally for now)
 with open('random_forest_model.pkl', 'rb') as model_file:
@@ -51,12 +52,12 @@ def predict():
     except Exception as e:
         return jsonify({'error': f'Error during prediction: {str(e)}'}), 500
 
-def recommend_policies(fitness_score, model, data, scaler,salary):
+def recommend_policies(fitness_score, model, data, scaler, salary):
     """
     Recommend health insurance policies based on the given fitness score.
     """
     # Assuming fitness score is used as the 5th feature in the input
-    input_features = [fitness_score,salary]  # Adjust if more features are required
+    input_features = [fitness_score, salary]  # Adjust if more features are required
     normalized_input = scaler.transform([input_features])[0]
 
     # Get nearest neighbors
@@ -86,7 +87,7 @@ def recommend():
             return jsonify({'error': '"fitness_score" must be a number between 0 and 100'}), 400
 
         # Generate recommendations
-        recommendations = recommend_policies(fitness_score, knn_model, processed_data, knn_scaler,salary)
+        recommendations = recommend_policies(fitness_score, knn_model, processed_data, knn_scaler, salary)
 
         # Convert DataFrame to JSON
         recommendations_json = recommendations.to_dict(orient='records')
@@ -97,4 +98,5 @@ def recommend():
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
